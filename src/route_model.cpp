@@ -1,4 +1,5 @@
 #include "route_model.h"
+
 #include <iostream>
 
 RouteModel::RouteModel(const std::vector<std::byte> &xml) : Model(xml) {
@@ -11,20 +12,18 @@ RouteModel::RouteModel(const std::vector<std::byte> &xml) : Model(xml) {
     CreateNodeToRoadHashmap();
 }
 
-
 void RouteModel::CreateNodeToRoadHashmap() {
     for (const Model::Road &road : Roads()) {
         if (road.type != Model::Road::Type::Footway) {
             for (int node_idx : Ways()[road.way].nodes) {
                 if (node_to_road.find(node_idx) == node_to_road.end()) {
-                    node_to_road[node_idx] = std::vector<const Model::Road *> ();
+                    node_to_road[node_idx] = std::vector<const Model::Road *>();
                 }
                 node_to_road[node_idx].push_back(&road);
             }
         }
     }
 }
-
 
 RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) {
     Node *closest_node = nullptr;
@@ -41,16 +40,14 @@ RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices) 
     return closest_node;
 }
 
-
 void RouteModel::Node::FindNeighbors() {
-    for (auto & road : parent_model->node_to_road[this->index]) {
+    for (auto &road : parent_model->node_to_road[this->index]) {
         RouteModel::Node *new_neighbor = this->FindNeighbor(parent_model->Ways()[road->way].nodes);
         if (new_neighbor) {
             this->neighbors.emplace_back(new_neighbor);
         }
     }
 }
-
 
 RouteModel::Node &RouteModel::FindClosestNode(float x, float y) {
     Node input;
