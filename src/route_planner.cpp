@@ -49,7 +49,15 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node) {
 // - Remove that node from the open_list.
 // - Return the pointer.
 
+bool RoutePlanner::Compare(RouteModel::Node *n1, RouteModel::Node *n2) {
+    return n1->g_value + n1->h_value > n2->g_value + n2->h_value;
+}
+
 RouteModel::Node *RoutePlanner::NextNode() {
+    sort(open_list.begin(), open_list.end(), RoutePlanner::Compare);
+    RouteModel::Node *node = open_list.back();
+    open_list.pop_back();
+    return node;
 }
 
 // TODO 6: Complete the ConstructFinalPath method to return the final path found from your A* search.
